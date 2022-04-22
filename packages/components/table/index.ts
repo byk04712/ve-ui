@@ -1,4 +1,4 @@
-import { withInstall } from 'element-plus/es/utils'
+import { withInstall } from '@ve-ui/utils'
 import Table from './src/table.vue'
 
 export const VeTable = withInstall(Table)

@@ -11,6 +11,7 @@
     "dev": "pnpm -C play dev",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview --port 5050",
+    "gen": "bash ./scripts/gc.sh",
     "test:unit": "vitest --environment jsdom",
     "test:e2e": "start-server-and-test preview http://127.0.0.1:5050/ 'cypress open'",
     "test:e2e:ci": "start-server-and-test preview http://127.0.0.1:5050/ 'cypress run'",
@@ -22,7 +23,9 @@
     "vue": "^3.2.0"
   },
   "dependencies": {
-    "@ve-ui/components": "workspace:*"
+    "@ve-ui/components": "workspace:*",
+    "@ve-ui/utils": "workspace:*",
+    "@ve-ui/constants": "workspace:*"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",

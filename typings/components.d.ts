@@ -3,3 +3,9 @@ declare module 'vue' {
     VeTable: typeof import ('../packages/ve-ui')['VeTable']
   }
 }
+
+declare module '@vue/runtime-core' {
+  interface ComponentCustomProperties {}
+}
+
+export { }
