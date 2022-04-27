@@ -51,7 +51,7 @@ EOF
 
 # Generate property define file
 cat > $DIRNAME/src/$INPUT_NAME.ts <<EOF
-import { buildProps } from '@bgy-plus/utils/props'
+import { buildProps } from '@ve-ui/utils'
 
 import type { ExtractPropTypes } from 'vue'
 
