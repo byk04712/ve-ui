@@ -1,16 +1,19 @@
 <template>
   <div>
-    <el-button type="primary">Hi, You see me ? </el-button>
-    <ve-table></ve-table>
-    <ve-form></ve-form>
+    <!-- <ve-table></ve-table> -->
+    <!-- <ve-form></ve-form> -->
+    <hr />
+    <p>item组件</p>
     <ve-item v-model="text"></ve-item>
-    <ve-item-range v-model="range"></ve-item-range>
+    <hr />
+    <p>item-split组件</p>
+    <ve-item-split v-model="range"></ve-item-split>
   </div>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VeTable, VeForm, VeItem, VeItemRange } from '@ve-ui/components'
+import { VeForm, VeItem, VeItemSplit } from '@ve-ui/components'
 
 const text = ref('')
-const range = ref([])
+const range = ref([new Date(), new Date()])
 </script>

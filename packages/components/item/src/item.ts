@@ -1,40 +1,7 @@
 import { buildProps, definePropType } from '@ve-ui/utils'
-
+import { FieldFlags } from '@ve-ui/constants'
+// import type { ApiConfig } from '../../table-/src/request.type'
 import type { ExtractPropTypes } from 'vue'
-import type { TruthOrResolver } from '@ve-ui/utils'
-
-// 字段类型
-export enum ItemType {
-  Text = 'text',
-  TextArea = 'textarea',
-  Select = 'select',
-  Radio = 'radio',
-  Date = 'date',
-  Year = 'year',
-  Month = 'month',
-  Dates = 'dates',
-  Datetime = 'datetime',
-  Week = 'week',
-  Switch = 'switch',
-  Slot = 'slot',
-  // Currency = 'currency',
-}
-
-// 下拉框选项
-export type OptionType = {
-  /**
-   * 展示的值
-   */
-  label: string
-  /**
-   * 实际值
-   */
-  value: string
-  /**
-   * 选项是否禁用
-   */
-  disabled?: boolean
-}
 
 /**
  * 查询区域字段
@@ -44,67 +11,70 @@ export const itemProps = buildProps({
    * v-model 值
    */
   modelValue: {
-    type: definePropType<any>([Object, String, Number, Array]),
-    required: true,
+    type: definePropType<any>([Object, String, Number, Boolean, Array]),
   },
   /**
    * 字段类型
+   * 建议传字符串类型
    */
   type: {
-    type: definePropType<ItemType>(String),
-    default: ItemType.Text,
+    type: definePropType<FieldFlags>([String, Number]),
+    default: FieldFlags.text,
   },
   /**
-   * 属性值，或 type 为 slot 时，作为插槽名
+   * 属性值
+   * 如果对应接口是两个字段，则建议使用数据，分别对应接口两个字段
+   * 如果接口是一个字段，则存储在一个为数组中
    */
-  prop: String,
-  /**
-   * 区间字段时有效，起始字段的 key 值
-   *
-   * 注：如同时提供了 prop，则会将字段值填充到 prop 指定的字段内
-   */
-  start: String,
-  /**
-   * 区间字段时有效，结束字段的 key 值
-   *
-   * 注：如同时提供了 prop，则会将字段值填充到 prop 指定的字段内
-   */
-  end: String,
-  /**
-   * 展示文字
-   */
-  label: {
-    type: String,
+  prop: {
+    type: definePropType<string | string[]>([String, Array]),
     default: '',
   },
   /**
-   * 配合 label 属性使用，表示是否显示 label 后面的冒号,默认 true
+   * 只有当 prop 为数组时使用
+   * 起始值 v-model:start
    */
-  colon: {
-    type: Boolean,
-    default: true,
+  start: {
+    type: definePropType<object | string | number | boolean | Array<any>>([
+      Object,
+      String,
+      Number,
+      Boolean,
+      Array,
+    ]),
   },
   /**
-   * 查询区域 label 字段标签宽度，例如 '50px'。 可以使用 auto，优先级高
+   * 只有当 prop 为数组时使用
+   * 结束值 v-model:end
    */
-  labelWidth: {
-    type: definePropType<string | number>([String, Number]),
-    default: '90px',
+  end: {
+    type: definePropType<object | string | number | boolean | Array<any>>([
+      Object,
+      String,
+      Number,
+      Boolean,
+      Array,
+    ]),
+  },
+} as const)
+
+/**
+ * 区间字段属性
+ */
+export const itemSplitProps = buildProps({
+  ...itemProps,
+  /**
+   * v-model 值
+   */
+  modelValue: {
+    type: definePropType<any>([Object, String, Number, Array]),
   },
   /**
-   * 跨度，值不能大于 rowSize
+   * 区间字段类型
    */
-  span: {
-    type: Number,
-  },
-  /**
-   * 是否区间输入框
-   *
-   * 可设置为区间输入框的字段有type为 date/year/month/datetime
-   */
-  range: {
-    type: Boolean,
-    default: false,
+  type: {
+    type: definePropType<FieldFlags>([String, Number]),
+    default: FieldFlags.daterange,
   },
   /**
    * 区间输入框的分隔符号
@@ -114,121 +84,69 @@ export const itemProps = buildProps({
     default: '-',
   },
   /**
-   * 是否开区间(该属性只有range为true时才有效)，开区间表示区间范围输入框是2个分离的框
-   */
-  stage: {
-    type: Boolean,
-    default: false,
-  },
-  /**
-   * 字段 placeholder 提示信息
+   * 开始结束字段 placeholder 提示信息
    */
   placeholder: {
-    type: String,
+    type: definePropType<string[]>(Array),
+    default: () => [],
   },
-  /**
-   * 起始输入框 placeholder 提示信息
-   *
-   * 仅当 range 为 true 时有效
-   */
-  startPlaceholder: {
-    type: String,
+} as const)
+
+export type SelectModelValue = string | number | boolean | object
+
+export const selectFieldProps = buildProps({
+  modelValue: {
+    type: definePropType<SelectModelValue>([String, Number, Boolean, Object]),
   },
-  /**
-   * 终止输入框 placeholder 提示信息
-   *
-   * 仅当 range 为 true 时有效
-   */
-  endPlaceholder: {
-    type: String,
-  },
-  /**
-   * 输入字段最大长度限制
-   * 默认 100 个字符长度
-   */
-  maxlength: {
-    type: [String, Number],
-    default: 100,
-  },
-  /**
-   * 是否展示
-   * 默认 true
-   */
-  visible: {
-    type: definePropType<TruthOrResolver<any>>([Boolean, Function]),
-    default: true,
-  },
-  /**
-   * 是否可清空
-   * 默认 true
-   */
   clearable: {
     type: Boolean,
     default: true,
   },
   /**
-   * 是否禁用
-   * 默认 false
+   * 下拉选项映射
    */
-  disabled: {
-    type: definePropType<TruthOrResolver<any>>([Boolean, Function]),
-    default: false,
+  optionProps: {
+    type: definePropType<{ label: string; value: string }>(Object),
+    default: () => ({
+      // 展示值
+      label: 'label',
+      // 实际值
+      value: 'value',
+    }),
   },
   /**
-   * 下拉框选项
+   * API 获取下拉框数据
+   */
+  // api: {
+  //   type: definePropType<ApiConfig>(Object),
+  // },
+  /**
+   * 下拉选项
    */
   options: {
-    type: definePropType<Array<OptionType>>(Array),
+    type: Array,
     default: () => [],
   },
   /**
-   * 是否多选
+   * 只包含哪些值
    */
-  multiple: {
-    type: Boolean,
-    default: false,
+  includes: {
+    type: Array,
+    default: () => [],
   },
   /**
-   * 单选框类型，可选择 radio | button
+   * 排除哪些值
    */
-  radioType: {
-    type: definePropType<'radio' | 'button'>(String),
-    default: 'radio',
+  excludes: {
+    type: Array,
+    default: () => [],
   },
-  /**
-   * 格式化
-   */
-  format: {
-    type: String,
-    default: 'YYYY-MM-DD',
-  },
-  /**
-   * 值格式化
-   */
-  valueFormat: {
-    type: String,
-  },
-  /**
-   * 输入框行数，只对 type="textarea" 有效
-   */
-  rows: {
-    type: Number,
-    default: 2,
-  },
-  /**
-   * textarea高度是否自适应，只在 type="textarea" 时生效。 可以接受一个对象，比如: { minRows: 2, maxRows: 6 }
-   */
-  autosize: {
-    type: [Boolean, Object],
-    default: false,
-  },
-  /**
-   * 是否显示输入字数统计，只在 type = "text" 或 type = "textarea" 时有效
-   */
-  showWordLimit: Boolean,
-} as const)
+})
+
+export type SelectFieldProps = ExtractPropTypes<typeof selectFieldProps>
 
 export type ItemProps = ExtractPropTypes<typeof itemProps>
+export type ItemSplitProps = ExtractPropTypes<typeof itemSplitProps>
 
 export const itemEmits = {}
 
